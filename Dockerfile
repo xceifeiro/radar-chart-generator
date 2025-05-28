@@ -1,27 +1,36 @@
-# Use a imagem oficial do Node.js
-FROM node:18-alpine
+# Etapa 1: Instala as dependências e gera o build
+FROM node:18-alpine AS builder
 
-# Defina o diretório de trabalho
 WORKDIR /app
 
-# Copie os arquivos de dependências
-COPY package.json package-lock.json* ./
+# Instala as dependências
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Instale as dependências
-RUN npm ci --only=production
-
-# Copie todo o código da aplicação
+# Copia o restante do código
 COPY . .
 
-# Faça o build da aplicação Next.js
+# Faz o build da aplicação Next.js
 RUN npm run build
 
-# Exponha a porta 3000
+
+# Etapa 2: Cria a imagem final, apenas com os arquivos necessários
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Copia apenas os arquivos necessários da etapa de build
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+# Exponha a porta que o Next utiliza
 EXPOSE 3000
 
 # Defina as variáveis de ambiente
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Comando para iniciar a aplicação
-CMD ["npm", "start"]
+# Comando para rodar a aplicação
+CMD ["npx", "next", "start"]
