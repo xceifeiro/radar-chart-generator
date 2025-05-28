@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Badge } from "@/components/ui/badge"
 
 export default function PNGTestPage() {
   const [labels, setLabels] = useState("")
@@ -13,7 +13,6 @@ export default function PNGTestPage() {
   const [imageUrl, setImageUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const [useExternalService, setUseExternalService] = useState(true)
   const [imageFormat, setImageFormat] = useState("png")
 
   const exampleData = {
@@ -58,7 +57,6 @@ export default function PNGTestPage() {
         body: JSON.stringify({
           labels: labelsArray,
           dados: dadosArray,
-          useExternalService,
         }),
       })
 
@@ -97,7 +95,12 @@ export default function PNGTestPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Gerador de PNG Radar Chart</h1>
-        <p className="text-muted-foreground">Gere gráficos radar em formato PNG usando conversão SVG</p>
+        <p className="text-muted-foreground">Gere gráficos radar em formato PNG usando conversão local</p>
+        <div className="flex justify-center gap-2">
+          <Badge variant="secondary">🚀 Conversão Local</Badge>
+          <Badge variant="secondary">⚡ Sharp</Badge>
+          <Badge variant="secondary">🎨 Alta Qualidade</Badge>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -127,11 +130,6 @@ export default function PNGTestPage() {
                 onChange={(e) => setDados(e.target.value)}
                 rows={4}
               />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch id="external-service" checked={useExternalService} onCheckedChange={setUseExternalService} />
-              <Label htmlFor="external-service">Usar serviço externo para conversão PNG</Label>
             </div>
 
             <div className="flex gap-2">
@@ -169,9 +167,7 @@ export default function PNGTestPage() {
                   {imageFormat === "png" ? (
                     <span className="text-green-600">✅ Convertido para PNG com sucesso!</span>
                   ) : (
-                    <span className="text-yellow-600">
-                      ⚠️ Fallback: SVG retornado (serviço de conversão indisponível)
-                    </span>
+                    <span className="text-yellow-600">⚠️ Fallback: SVG retornado (conversão PNG indisponível)</span>
                   )}
                 </div>
               </div>
@@ -197,12 +193,11 @@ export default function PNGTestPage() {
           <div>
             <h4 className="font-semibold mb-2">Exemplo de requisição:</h4>
             <pre className="bg-muted p-4 rounded text-sm overflow-x-auto">
-              {`curl -X POST https://seu-dominio.vercel.app/api/radar-chart-png \\
+              {`curl -X POST https://seu-dominio.com/api/radar-chart-png \\
   -H "Content-Type: application/json" \\
   -d '{
     "labels": ["Item 1", "Item 2", "Item 3"],
-    "dados": [7, 8, 5],
-    "useExternalService": true
+    "dados": [7, 8, 5]
   }' \\
   --output radar-chart.png`}
             </pre>
@@ -218,7 +213,7 @@ export default function PNGTestPage() {
                 <code>dados</code>: Array de números (0-10) com os valores
               </li>
               <li>
-                <code>useExternalService</code>: Boolean (opcional) - usar serviço externo para conversão PNG
+                <code>options</code>: Objeto opcional com configurações de personalização
               </li>
             </ul>
           </div>
@@ -231,15 +226,15 @@ export default function PNGTestPage() {
             </p>
           </div>
 
-          <div className="p-4 bg-blue-50 rounded-lg">
-            <h4 className="font-semibold mb-2 text-blue-800">💡 Configuração do Serviço Externo:</h4>
-            <p className="text-sm text-blue-700">Para usar o serviço de conversão PNG em produção, você precisa:</p>
-            <ol className="text-sm text-blue-700 mt-2 space-y-1">
-              <li>1. Criar conta gratuita em htmlcsstoimage.com</li>
-              <li>2. Obter suas credenciais de API</li>
-              <li>3. Substituir as credenciais demo no código</li>
-              <li>4. Configurar variáveis de ambiente HCTI_USER_ID e HCTI_API_KEY</li>
-            </ol>
+          <div className="p-4 bg-green-50 rounded-lg">
+            <h4 className="font-semibold mb-2 text-green-800">✅ Conversão Local:</h4>
+            <p className="text-sm text-green-700">Esta API usa conversão local com Sharp:</p>
+            <ul className="text-sm text-green-700 mt-2 space-y-1">
+              <li>• Sem dependências externas</li>
+              <li>• Maior privacidade dos dados</li>
+              <li>• Conversão mais rápida</li>
+              <li>• Sem limites de uso</li>
+            </ul>
           </div>
         </CardContent>
       </Card>

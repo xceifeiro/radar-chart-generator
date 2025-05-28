@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import sharp from "sharp"
 
 // Função simplificada para gerar SVG básico
 function generateSimpleRadarSVG(labels: string[], dados: number[]): string {
@@ -82,32 +83,13 @@ function generateSimpleRadarSVG(labels: string[], dados: number[]): string {
 
 async function convertSVGtoPNG(svgContent: string): Promise<string | null> {
   try {
-    // Tentar importar Sharp dinamicamente
-    const sharp = await import("sharp")
+    const pngBuffer = await sharp(Buffer.from(svgContent)).resize(600, 600).png().toBuffer()
 
-    // Converter SVG para PNG usando Sharp
-    const pngBuffer = await sharp
-      .default(Buffer.from(svgContent, "utf-8"), {
-        density: 150,
-      })
-      .resize(600, 600, {
-        fit: "contain",
-        background: { r: 255, g: 255, b: 255, alpha: 1 },
-        withoutEnlargement: false,
-      })
-      .png({
-        quality: 90,
-        compressionLevel: 6,
-        force: true,
-      })
-      .toBuffer()
-
-    // Converter para base64
     const pngBase64 = pngBuffer.toString("base64")
     return `data:image/png;base64,${pngBase64}`
   } catch (error) {
     console.error("Erro na conversão SVG para PNG:", error)
-    return null // Retorna null em caso de erro
+    return null
   }
 }
 
