@@ -1,14 +1,23 @@
 # Use a imagem oficial do Node.js
 FROM node:18-alpine
 
+# Instalar dependências do sistema necessárias para Sharp
+RUN apk add --no-cache \
+    libc6-compat \
+    vips-dev \
+    python3 \
+    make \
+    g++
+
 # Defina o diretório de trabalho
 WORKDIR /app
 
 # Copie os arquivos de dependências
 COPY package*.json ./
 
-# Instale apenas as dependências básicas
-RUN npm install --omit=optional
+# Limpar cache do npm e instalar dependências
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps --no-audit --no-fund
 
 # Copie todo o código da aplicação
 COPY . .
